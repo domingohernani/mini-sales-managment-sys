@@ -3,7 +3,10 @@
     "fastify": "^5.7.2"
   },
   "scripts": {
-    "dev": "node --watch-path=./ src/index.js"
+    "dev": "node --watch-path=./ src/index.ts"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.2.0"
+  }
 }
