@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "fastify": "^5.7.2"
+  },
+  "scripts": {
+    "dev": "node --watch-path=./ src/index.js"
+  },
+  "type": "module"
+}
