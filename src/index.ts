@@ -2,14 +2,16 @@ import Fastify from "fastify";
 import Postgres from "./plugins/postgres.ts";
 
 import customerRoutes from "./customers/customer.route.ts";
+import productRoutes from "./products/product.route.ts";
 
 const fastify = Fastify();
 
 // Register the database
 fastify.register(Postgres);
 
-// REgister routes
+// Register routes
 fastify.register(customerRoutes);
+fastify.register(productRoutes);
 
 // Run the server (script)
 const start = async () => {
