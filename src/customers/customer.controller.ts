@@ -8,7 +8,9 @@ import {
 } from "./schema/customer.schema.ts";
 import { idSchema, type IdParams } from "../common/schemas/id.schema.ts";
 
-// Get all customers
+/**
+ * Retrieves all customers ordered by creation date (newest first).
+ */
 export const getAll = async (request: FastifyRequest, reply: FastifyReply) => {
   const { rows } = await request.server.pg.query(
     "SELECT * FROM customers ORDER BY created_at DESC",
@@ -16,7 +18,10 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply) => {
   return { customers: rows };
 };
 
-// Get customer by ID
+/**
+ * Retrieves a single customer by ID.
+ * Returns 404 if customer not found.
+ */
 export const getOne = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
@@ -42,7 +47,10 @@ export const getOne = async (
   }
 };
 
-// Create customer
+/**
+ * Creates a new customer with validated data.
+ * Returns 400 if validation fails.
+ */
 export const create = async (
   request: FastifyRequest<{ Body: CreateCustomer }>,
   reply: FastifyReply,
@@ -68,7 +76,11 @@ export const create = async (
   }
 };
 
-// Update customer
+/**
+ * Updates customer information with partial data.
+ * At least one field must be provided.
+ * Returns 404 if customer not found, 400 if no fields provided or validation fails.
+ */
 export const update = async (
   request: FastifyRequest<{ Params: IdParams; Body: UpdateCustomer }>,
   reply: FastifyReply,
@@ -128,7 +140,10 @@ export const update = async (
   }
 };
 
-// Delete customer
+/**
+ * Deletes a customer by ID.
+ * Returns 404 if customer not found.
+ */
 export const remove = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
