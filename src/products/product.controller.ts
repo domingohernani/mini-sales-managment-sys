@@ -8,7 +8,9 @@ import {
 } from "./schema/product.schema.ts";
 import { idSchema, type IdParams } from "../common/schemas/id.schema.ts";
 
-// Get all products
+/**
+ * Retrieves all products ordered by creation date (newest first).
+ */
 export const getAll = async (request: FastifyRequest, reply: FastifyReply) => {
   const { rows } = await request.server.pg.query(
     "SELECT * FROM products ORDER BY created_at DESC",
@@ -16,7 +18,10 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply) => {
   return { products: rows };
 };
 
-// Get product by ID
+/**
+ * Retrieves a single product by ID.
+ * Returns 404 if product not found.
+ */
 export const getOne = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
@@ -42,7 +47,10 @@ export const getOne = async (
   }
 };
 
-// Create product
+/**
+ * Creates a new product with validated data.
+ * Returns 400 if validation fails.
+ */
 export const create = async (
   request: FastifyRequest<{ Body: CreateProduct }>,
   reply: FastifyReply,
@@ -68,7 +76,11 @@ export const create = async (
   }
 };
 
-// Update product
+/**
+ * Updates product information with partial data.
+ * At least one field must be provided.
+ * Returns 404 if product not found, 400 if no fields provided or validation fails.
+ */
 export const update = async (
   request: FastifyRequest<{ Params: IdParams; Body: UpdateProduct }>,
   reply: FastifyReply,
@@ -128,7 +140,10 @@ export const update = async (
   }
 };
 
-// Delete product
+/**
+ * Deletes a product by ID.
+ * Returns 404 if product not found.
+ */
 export const remove = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
