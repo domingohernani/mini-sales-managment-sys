@@ -9,7 +9,7 @@ const fastify = Fastify();
 // Register the database
 fastify.register(Postgres);
 
-// REgister routes
+// Register routes
 fastify.register(customerRoutes);
 fastify.register(productRoutes);
 
