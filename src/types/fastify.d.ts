@@ -5,4 +5,8 @@ declare module "fastify" {
   interface FastifyInstance {
     pg: Pool;
   }
+
+   interface FastifyRequest {
+    user?: jose.JWTPayload;
+  }
 }

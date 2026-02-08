@@ -6,8 +6,10 @@ import {
   update,
   remove,
 } from "./customer.controller.ts";
+import { verifyJWT } from "../common/middlewares/verify-jwt.middleware.ts";
 
 const customerRoutes = async (fastify: FastifyInstance) => {
+  fastify.addHook("preHandler", verifyJWT); // protect all routes
   fastify.get("/customers", getAll);
   fastify.get("/customers/:id", getOne);
   fastify.post("/customers", create);
