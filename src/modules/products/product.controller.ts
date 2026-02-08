@@ -6,7 +6,7 @@ import {
   type CreateProduct,
   type UpdateProduct,
 } from "./schema/product.schema.ts";
-import { idSchema, type IdParams } from "../common/schemas/id.schema.ts";
+import { idSchema, type IdParams } from "../../common/schemas/id.schema.ts";
 
 /**
  * Retrieves all products ordered by creation date (newest first).

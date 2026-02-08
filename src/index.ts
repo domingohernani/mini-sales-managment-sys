@@ -2,10 +2,10 @@ import Fastify from "fastify";
 import Postgres from "./plugins/postgres.ts";
 import cookie from "@fastify/cookie";
 
-import authRoutes from "./auth/auth.route.ts";
-import usersRoutes from "./users/user.route.ts";
-import customerRoutes from "./customers/customer.route.ts";
-import productRoutes from "./products/product.route.ts";
+import authRoutes from "./modules/auth/auth.route.ts";
+import usersRoutes from "./modules/users/user.route.ts";
+import customerRoutes from "./modules/customers/customer.route.ts";
+import productRoutes from "./modules/products/product.route.ts";
 
 const fastify = Fastify();
 

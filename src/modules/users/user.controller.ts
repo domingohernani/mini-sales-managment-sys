@@ -1,27 +1,22 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { ZodError } from "zod";
 import {
-  createCustomerSchema,
-  updateCustomerSchema,
-  type CreateCustomer,
-  type UpdateCustomer,
-} from "./schema/customer.schema.ts";
-import { idSchema, type IdParams } from "../common/schemas/id.schema.ts";
+  createUserSchema,
+  updateUserSchema,
+  type CreateUserInput,
+  type UpdateUserInput,
+} from "./schema/user.schema.ts";
+import { idSchema, type IdParams } from "../../common/schemas/id.schema.ts";
 
-/**
- * Retrieves all customers ordered by creation date (newest first).
- */
+// Get all users
 export const getAll = async (request: FastifyRequest, reply: FastifyReply) => {
   const { rows } = await request.server.pg.query(
-    "SELECT * FROM customers ORDER BY created_at DESC",
+    "SELECT id, first_name, last_name, email FROM users",
   );
-  return { customers: rows };
+  return { users: rows };
 };
 
-/**
- * Retrieves a single customer by ID.
- * Returns 404 if customer not found.
- */
+// Get user by ID
 export const getOne = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
@@ -30,15 +25,15 @@ export const getOne = async (
     const { id } = idSchema.parse(request.params);
 
     const { rows } = await request.server.pg.query(
-      "SELECT * FROM customers WHERE id = $1",
+      "SELECT id, first_name, last_name, email FROM users WHERE id = $1",
       [id],
     );
 
     if (rows.length === 0) {
-      return reply.status(404).send({ error: "Customer not found" });
+      return reply.status(404).send({ error: "User not found" });
     }
 
-    return { customer: rows[0] };
+    return { user: rows[0] };
   } catch (error) {
     if (error instanceof ZodError) {
       return reply.status(400).send({ error: error.message });
@@ -47,27 +42,23 @@ export const getOne = async (
   }
 };
 
-/**
- * Creates a new customer with validated data.
- * Returns 400 if validation fails.
- */
+// Create user
 export const create = async (
-  request: FastifyRequest<{ Body: CreateCustomer }>,
+  request: FastifyRequest<{ Body: CreateUserInput }>,
   reply: FastifyReply,
 ) => {
   try {
-    const { first_name, last_name, email, phone } = createCustomerSchema.parse(
+    const { first_name, last_name, email, password } = createUserSchema.parse(
       request.body,
     );
 
+    // TODO: Hash password before storing
     const { rows } = await request.server.pg.query(
-      `INSERT INTO customers (first_name, last_name, email, phone) 
-       VALUES ($1, $2, $3, $4) 
-       RETURNING *`,
-      [first_name, last_name, email, phone],
+      "INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING id, first_name, last_name, email",
+      [first_name, last_name, email, password], // Use hashedPassword in production
     );
 
-    return reply.status(201).send({ customer: rows[0] });
+    return reply.status(201).send({ user: rows[0] });
   } catch (error) {
     if (error instanceof ZodError) {
       return reply.status(400).send({ error: error.message });
@@ -76,20 +67,16 @@ export const create = async (
   }
 };
 
-/**
- * Updates customer information with partial data.
- * At least one field must be provided.
- * Returns 404 if customer not found, 400 if no fields provided or validation fails.
- */
+// Update user
 export const update = async (
-  request: FastifyRequest<{ Params: IdParams; Body: UpdateCustomer }>,
+  request: FastifyRequest<{ Params: IdParams; Body: UpdateUserInput }>,
   reply: FastifyReply,
 ) => {
   try {
     const { id } = idSchema.parse(request.params);
-    const validatedBody = updateCustomerSchema.parse(request.body);
+    const validatedBody = updateUserSchema.parse(request.body);
 
-    const { first_name, last_name, email, phone } = validatedBody;
+    const { first_name, last_name, email, password } = validatedBody;
 
     // Building a dynamic update query based on provided fields
     const updates: string[] = [];
@@ -111,27 +98,27 @@ export const update = async (
       values.push(email);
     }
 
-    if (phone !== undefined) {
-      updates.push(`phone = $${paramCount++}`);
-      values.push(phone);
+    if (password !== undefined) {
+      // TODO: Hash password before storing
+      // const hashedPassword = await bcrypt.hash(password, 10);
+      updates.push(`password = $${paramCount++}`);
+      values.push(password); // Use hashedPassword in production
     }
 
     if (updates.length === 0) {
       return reply.status(400).send({ error: "No fields to update" });
     }
 
-    updates.push(`updated_at = NOW()`);
     values.push(id);
-
-    const query = `UPDATE customers SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING *`;
+    const query = `UPDATE users SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING id, first_name, last_name, email`;
 
     const { rows } = await request.server.pg.query(query, values);
 
     if (rows.length === 0) {
-      return reply.status(404).send({ error: "Customer not found" });
+      return reply.status(404).send({ error: "User not found" });
     }
 
-    return { customer: rows[0] };
+    return { user: rows[0] };
   } catch (error) {
     if (error instanceof ZodError) {
       return reply.status(400).send({ error: error.message });
@@ -140,10 +127,7 @@ export const update = async (
   }
 };
 
-/**
- * Deletes a customer by ID.
- * Returns 404 if customer not found.
- */
+// Delete user
 export const remove = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
@@ -152,15 +136,15 @@ export const remove = async (
     const { id } = idSchema.parse(request.params);
 
     const { rows } = await request.server.pg.query(
-      "DELETE FROM customers WHERE id = $1 RETURNING id",
+      "DELETE FROM users WHERE id = $1 RETURNING id",
       [id],
     );
 
     if (rows.length === 0) {
-      return reply.status(404).send({ error: "Customer not found" });
+      return reply.status(404).send({ error: "User not found" });
     }
 
-    return reply.status(200).send({ message: "Customer deleted successfully" });
+    return reply.status(200).send({ message: "User deleted successfully" });
   } catch (error) {
     if (error instanceof ZodError) {
       return reply.status(400).send({ error: error.message });

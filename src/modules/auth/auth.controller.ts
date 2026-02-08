@@ -10,7 +10,7 @@ import {
   REFRESH_TOKEN_EXPIRATION,
   ACCESS_TOKEN_EXPIRATION_MS,
   REFRESH_TOKEN_EXPIRATION_MS,
-} from "../common/constants/auth.constant.ts";
+} from "../../common/constants/auth.constant.ts";
 
 // Authenticate user
 export const authenticate = async (
