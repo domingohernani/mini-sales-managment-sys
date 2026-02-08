@@ -1,5 +1,6 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { ZodError } from "zod";
+import bcrypt from "bcrypt";
 import {
   createUserSchema,
   updateUserSchema,
@@ -50,6 +51,7 @@ export const getOne = async (
 
 /**
  * Creates a new user with validated data.
+ * Password is hashed using bcrypt before storage.
  * Returns 400 if validation fails.
  */
 export const create = async (
@@ -61,10 +63,12 @@ export const create = async (
       request.body,
     );
 
-    // TODO: Hash password before storing
+    // Hash password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const { rows } = await request.server.pg.query(
       "INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING id, first_name, last_name, email",
-      [first_name, last_name, email, password], // Use hashedPassword in production
+      [first_name, last_name, email, hashedPassword],
     );
 
     return reply.status(201).send({ user: rows[0] });
@@ -79,6 +83,7 @@ export const create = async (
 /**
  * Updates user information with partial data.
  * At least one field must be provided.
+ * Password is hashed using bcrypt before storage if provided.
  * Returns 404 if user not found, 400 if no fields provided or validation fails.
  */
 export const update = async (
@@ -91,7 +96,6 @@ export const update = async (
 
     const { first_name, last_name, email, password } = validatedBody;
 
-    // Building a dynamic update query based on provided fields
     const updates: string[] = [];
     const values: any[] = [];
     let paramCount = 1;
@@ -112,10 +116,10 @@ export const update = async (
     }
 
     if (password !== undefined) {
-      // TODO: Hash password before storing
-      // const hashedPassword = await bcrypt.hash(password, 10);
+      // Hash password before storing
+      const hashedPassword = await bcrypt.hash(password, 10);
       updates.push(`password = $${paramCount++}`);
-      values.push(password); // Use hashedPassword in production
+      values.push(hashedPassword);
     }
 
     if (updates.length === 0) {
