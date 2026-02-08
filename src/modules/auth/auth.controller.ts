@@ -12,7 +12,11 @@ import {
   REFRESH_TOKEN_EXPIRATION_MS,
 } from "../../common/constants/auth.constant.ts";
 
-// Authenticate user
+/**
+ * Authenticates a user with email and password.
+ * Generates access and refresh tokens stored in HTTP-only cookies.
+ * Returns 400 if validation fails, 500 if server configuration error.
+ */
 export const authenticate = async (
   request: FastifyRequest<{ Body: AuthUser }>,
   reply: FastifyReply,
@@ -76,7 +80,12 @@ export const authenticate = async (
   }
 };
 
-// Refresh user
+/**
+ * Refreshes the access token using a valid refresh token from cookies.
+ * Verifies the refresh token and generates a new access token.
+ * Returns 401 if no refresh token found, 400 if validation fails,
+ * 500 if server configuration error.
+ */
 export const refresh = async (request: FastifyRequest, reply: FastifyReply) => {
   const refreshToken = request.cookies?.refreshToken;
 
