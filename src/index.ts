@@ -2,7 +2,8 @@ import Fastify from "fastify";
 import Postgres from "./plugins/postgres.ts";
 import cookie from "@fastify/cookie";
 
-import userRoutes from "./users/user.route.ts";
+import authRoutes from "./auth/auth.route.ts";
+import usersRoutes from "./users/user.route.ts";
 import customerRoutes from "./customers/customer.route.ts";
 import productRoutes from "./products/product.route.ts";
 
@@ -15,7 +16,8 @@ fastify.register(Postgres);
 fastify.register(cookie);
 
 // Register routes
-fastify.register(userRoutes);
+fastify.register(authRoutes);
+fastify.register(usersRoutes);
 fastify.register(customerRoutes);
 fastify.register(productRoutes);
 
