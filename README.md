@@ -395,34 +395,29 @@ Cookie: accessToken=<token>
 - **SameSite None**: Allows cross-site requests (configure based on your needs)
 - **Parameterized Queries**: Prevents SQL injection attacks
 - **Input Validation**: Zod schema validation on all inputs
-- **Password Hashing**: bcrypt ready (needs to be uncommented in production)
+- **Password Hashing**: bcrypt ready
 
 ## 🚧 Production Checklist
 
 Before deploying to production:
 
-1. **Enable Password Hashing**:
-   - Uncomment bcrypt hashing in `user.controller.ts` and `auth.controller.ts`
-   - Hash passwords in create and update operations
-   - Verify password hashes in authentication
-
-2. **Environment Variables**:
+1. **Environment Variables**:
    - Use proper secret management (AWS Secrets Manager, HashiCorp Vault, etc.)
    - Never commit `.env` files to version control
 
-3. **Database**:
+2. **Database**:
    - Set up proper indexes on frequently queried columns
    - Configure connection pooling
    - Enable SSL connections
 
-4. **Security**:
+3. **Security**:
    - Configure CORS properly for your domain
    - Update cookie settings (`sameSite`, `secure`, `domain`)
    - Implement rate limiting
    - Add request logging and monitoring
    - Set up error tracking (Sentry, etc.)
 
-5. **Performance**:
+4. **Performance**:
    - Enable response compression
    - Configure appropriate cache headers
    - Optimize database queries
