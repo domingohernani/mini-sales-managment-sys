@@ -7,7 +7,12 @@ import {
   type MonthQuery,
 } from "./schema/sales.schema.ts";
 
-// Get all sales (with optional filters)
+/**
+ * Retrieves all sales with detailed customer and product information.
+ * Supports optional filtering by customer ID, product ID, and date range.
+ * Returns sales ordered by date (newest first).
+ * Returns 400 if validation fails.
+ */
 export const getAll = async (
   request: FastifyRequest<{ Querystring: GetAllSalesQuery }>,
   reply: FastifyReply,
@@ -77,7 +82,12 @@ export const getAll = async (
   }
 };
 
-// Get which customer bought which products during a particular month
+/**
+ * Retrieves all purchases made during a specific month.
+ * Returns customer and product details for each sale within the month.
+ * Month format: YYYY-MM (e.g., "2024-01").
+ * Returns 400 if validation fails, 500 if internal error.
+ */
 export const getByMonth = async (
   request: FastifyRequest<{ Querystring: MonthQuery }>,
   reply: FastifyReply,

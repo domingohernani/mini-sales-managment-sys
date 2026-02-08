@@ -8,7 +8,10 @@ import {
 } from "./schema/user.schema.ts";
 import { idSchema, type IdParams } from "../../common/schemas/id.schema.ts";
 
-// Get all users
+/**
+ * Retrieves all users (excluding password field).
+ * Returns basic user information: id, first_name, last_name, email.
+ */
 export const getAll = async (request: FastifyRequest, reply: FastifyReply) => {
   const { rows } = await request.server.pg.query(
     "SELECT id, first_name, last_name, email FROM users",
@@ -16,7 +19,10 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply) => {
   return { users: rows };
 };
 
-// Get user by ID
+/**
+ * Retrieves a single user by ID (excluding password field).
+ * Returns 404 if user not found.
+ */
 export const getOne = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
@@ -42,7 +48,10 @@ export const getOne = async (
   }
 };
 
-// Create user
+/**
+ * Creates a new user with validated data.
+ * Returns 400 if validation fails.
+ */
 export const create = async (
   request: FastifyRequest<{ Body: CreateUserInput }>,
   reply: FastifyReply,
@@ -67,7 +76,11 @@ export const create = async (
   }
 };
 
-// Update user
+/**
+ * Updates user information with partial data.
+ * At least one field must be provided.
+ * Returns 404 if user not found, 400 if no fields provided or validation fails.
+ */
 export const update = async (
   request: FastifyRequest<{ Params: IdParams; Body: UpdateUserInput }>,
   reply: FastifyReply,
@@ -127,7 +140,10 @@ export const update = async (
   }
 };
 
-// Delete user
+/**
+ * Deletes a user by ID.
+ * Returns 404 if user not found.
+ */
 export const remove = async (
   request: FastifyRequest<{ Params: IdParams }>,
   reply: FastifyReply,
