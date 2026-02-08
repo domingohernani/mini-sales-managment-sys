@@ -6,6 +6,7 @@ import authRoutes from "./modules/auth/auth.route.ts";
 import usersRoutes from "./modules/users/user.route.ts";
 import customerRoutes from "./modules/customers/customer.route.ts";
 import productRoutes from "./modules/products/product.route.ts";
+import saleRoutes from "./modules/sales/sales.route.ts";
 
 const fastify = Fastify();
 
@@ -20,6 +21,7 @@ fastify.register(authRoutes);
 fastify.register(usersRoutes);
 fastify.register(customerRoutes);
 fastify.register(productRoutes);
+fastify.register(saleRoutes);
 
 // Run the server (script)
 const start = async () => {
